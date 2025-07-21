@@ -1,23 +1,49 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
-
-# testing
-/coverage
-
-# production
-/build
-
-# misc
-.DS_Store
+# Environment variables
+.env
 .env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.development
+.env.production
+.env.test
 
+# Node.js and npm
+node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Build output
+dist/
+build/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+*.swp
+
+# macOS system files
+.DS_Store
+
+# Windows system files
+Thumbs.db
+ehthumbs.db
+
+# Logs and databases
+*.log
+*.sql
+*.sqlite
+
+# TypeScript (if used)
+*.tsbuildinfo
+
+# MongoDB and database files
+data/
+db/
+*.mongodb
+
+# Test coverage
+coverage/
+
+# Miscellaneous
+.gitignore
