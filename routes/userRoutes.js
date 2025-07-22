@@ -3,6 +3,7 @@ const { body, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
+const auth = require('../middleware/auth');
 
 const userRoutes = express.Router();
 
@@ -58,9 +59,11 @@ userRoutes.post(
     }
 );
 
+// Post /api/users/login - User login route
 userRoutes.post(
     '/login',
     [
+        // Verify username and password fields
         body('username').notEmpty().withMessage('Username is required'),
         body('password').isLength({ min: 4 }).withMessage('Password must be at least 4 characters')
     ],
@@ -70,15 +73,32 @@ userRoutes.post(
 
         const { username, password } = req.body;
 
+        // Check if username exists
         const user = await User.findOne({ username });
         if(!user) return res.status(400).send('Invalid username');
 
+        // Check if password matches
         const isMatch = await bcrypt.compare(password, user.password);
         if(!isMatch) return res.status(400).send('Invalid password');
 
+        // Issue 1h JWT
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
         res.send({ user: {id: user._id, email: user.email, username: user.username}, token, loggedIn: true})
     }
-)
+);
+
+// GET /api/users/:id
+userRoutes.get('/:username', auth, async(req, res) => {
+    const { username } = req.params;
+
+    try {
+        const user = await User.findOne({username});
+        if(!user) return res.status(400).send('Could not find account');
+        res.status(200).send({user: { id: user._id, email: user.email, username: user.username, createdAt: user.createdAt }});
+    } catch (error) {
+        console.log('Server error', error);
+        res.status(500).send(error);
+    }
+})
 
 module.exports = userRoutes;

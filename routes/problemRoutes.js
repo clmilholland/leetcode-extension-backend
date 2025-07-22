@@ -4,7 +4,7 @@ const Problem = require('../models/Problem');
 
 const problemRoutes = express.Router();
 
-// POST /api/questions/create
+// POST /api/problems/create
 problemRoutes.post('/create', auth, async( req, res ) => {
     const { problemId, title, description, code, pseudocode, difficulty} = req.body;
     console.log(req.user)
@@ -31,6 +31,7 @@ problemRoutes.post('/create', auth, async( req, res ) => {
     }
 });
 
+// GET /api/problems
 problemRoutes.get('/', auth, async( req, res ) => {
     try {
         const problems = await Problem.find({ userId: req.user.id });
@@ -42,11 +43,13 @@ problemRoutes.get('/', auth, async( req, res ) => {
     }
 });
 
-problemRoutes.get('/:id', auth, async( req, res ) => {
+// GET api/problems/:id
+problemRoutes.get('/:problemId', auth, async( req, res ) => {
     const { problemId } = req.params;
+    console.log(problemId)
     try {
         const problem = await Problem.findOne({problemId});
-        if(!problem) return res.status(400).send('could not find problem by id');
+        if(!problem) return res.status(400).send('could not find problem by id:', problemId);
         res.status(200).json(problem);
     } catch (error) {
         console.log('Coult not get problem', error);
@@ -54,6 +57,7 @@ problemRoutes.get('/:id', auth, async( req, res ) => {
     }
 })
 
+// PUT api/problems/:id
 problemRoutes.put('/:problemId', auth, async( req, res ) => {
     const { problemId } = req.params;
     const { title, description, code, pseudocode, difficulty } = req.body;
@@ -76,6 +80,7 @@ problemRoutes.put('/:problemId', auth, async( req, res ) => {
     }
 })
 
+// DELETE api/problems/:id
 problemRoutes.delete('/:problemId', auth, async( req, res ) => {
     const { problemId } = req.params;
     try {
