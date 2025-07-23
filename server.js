@@ -1,12 +1,14 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const dotenvConfig = require('dotenv');
+dotenvConfig.config();
 const cors = require('cors');
 const userRoutes = require('./routes/userRoutes');
 const problemRoutes = require('./routes/problemRoutes');
+const extensionRoute = require('./routes/extensionRoute');
 
-dotenvConfig.config();
 const PORT = process.env.PORT || 5000;
+
 
 //Express setup
 const app = express();
@@ -16,6 +18,7 @@ app.use(express.json());
 // Mount Routes
 app.use('/api/users', userRoutes);
 app.use('/api/problems', problemRoutes);
+app.use('/api/extension', extensionRoute);
 
 
 //MongoDB connection
