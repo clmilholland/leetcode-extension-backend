@@ -87,7 +87,7 @@ problemRoutes.delete('/:problemId', auth, async( req, res ) => {
     try {
         const problem = await Problem.findOneAndDelete({problemId, userId: req.user.id});
         if(!problem) return res.status(400).send('Could not find problem by id');
-        res.status(200).json({ message: 'problem deleted successfully' });
+        res.status(200).json({ message: 'problem deleted successfully', problem: problem });
     } catch (error) {
         console.log('Error deleting problem', error);
         res.status(500).json({error: 'server issues'});
