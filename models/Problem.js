@@ -3,7 +3,9 @@ const mongoose = require('mongoose');
 const problemSchema = new mongoose.Schema({
     title: {type: String, required: true, unique: true},
     difficulty: {type: String},
+    tags: {type: Array},
     description: {type: String, required: true,},
+    shortDescription: {type: String},
     code: {type: String, required: true},
     pseudocode: {type: String, required: true},
     userId: {type: String, required: true},

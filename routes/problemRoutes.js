@@ -6,21 +6,22 @@ const problemRoutes = express.Router();
 
 // POST /api/problems/create
 problemRoutes.post('/create', auth, async( req, res ) => {
-    const { problemId, title, description, code, pseudocode, difficulty} = req.body;
-    console.log(req.user)
+    const { problemId, title, description, shortDescription, code, pseudocode, difficulty, tags} = req.body;
 
     try {
         const existingProblem = await Problem.findOne({ problemId });
-        if(existingProblem) return res.status(400).send('Problem already added');
+        if(existingProblem) return res.status(400).send(tagArray);
 
         const problem = new Problem({
             userId: req.user.id,
             problemId,
             title,
             description,
+            shortDescription,
             code,
             pseudocode,
             difficulty,
+            tags,
             createdAt: new Date()
         })
         await problem.save();
