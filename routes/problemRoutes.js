@@ -1,8 +1,39 @@
 const express = require('express');
 const auth = require('../middleware/auth');
-const Problem = require('../models/Problem');
+const {Problem} = require('../models/Problem');
+const UserFavorites = require('../models/Favorite');
 
 const problemRoutes = express.Router();
+
+// Favorite Problems Routes
+// CREATE api/problems/favorites
+problemRoutes.post('/favorites', auth, async( req, res ) => {
+    try {
+        let favorites = await UserFavorites.findOne({ userId: req.user.id });
+        if(!favorites) favorites = new UserFavorites({ userId: req.user.id, favoriteProblems: [] });
+        if(!favorites.favoriteProblems.some(p => p.problemId === req.body.problemId)) {
+            favorites.favoriteProblems.push(req.body);
+            await favorites.save();
+            res.status(201).json({message: 'Problem favorited', favorites})
+        } else {
+            res.status(400).json({message: 'Problem already favorited'});
+        }
+    } catch (error) {
+        res.status(400).json({error: error.message})
+    }
+})
+
+// GET api/problems/favorites
+problemRoutes.get('/favorites', auth, async( req, res ) => {
+    try {
+        console.log('getting favorites')
+        const favorites = await UserFavorites.findOne({ userId: req.user.id });
+        if(!favorites) return res.status(400).json({ message: 'Could not find any favorites'});
+        res.status(200).json(favorites.favoriteProblems);
+    } catch (error) {
+        res.status(400).json({ message: 'Request failed', error: error})
+    }
+})
 
 // POST /api/problems/create
 problemRoutes.post('/create', auth, async( req, res ) => {
@@ -93,5 +124,6 @@ problemRoutes.delete('/:problemId', auth, async( req, res ) => {
         res.status(500).json({error: 'server issues'});
     }
 })
+
 
 module.exports = problemRoutes;
