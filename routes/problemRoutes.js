@@ -35,6 +35,19 @@ problemRoutes.get('/favorites', auth, async( req, res ) => {
     }
 })
 
+// DELETE /api/problems/favorite/:problemId
+problemRoutes.delete('/favorites/:problemId', auth, async( req, res ) => {
+    const {problemId} = req.params;
+    console.log(problemId)
+    try {
+        const problem = await UserFavorites.findOneAndUpdate({userId: req.user.id}, {$pull: {favoriteProblems: {problemId}}}, {new: true});
+        if(!problem) return res.status(400).json({message: 'Could not find problem', error: error});
+        res.status(200).json({message: 'Problem removed from favorites', userFavorites: problem.favoriteProblems});
+    } catch (error) {
+        res.status(400).json({ message: 'Could not delete problem', error: error});
+    }
+})
+
 // POST /api/problems/create
 problemRoutes.post('/create', auth, async( req, res ) => {
     const { problemId, title, description, shortDescription, code, pseudocode, difficulty, tags} = req.body;
