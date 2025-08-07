@@ -54,7 +54,7 @@ problemRoutes.post('/create', auth, async( req, res ) => {
 
     try {
         const existingProblem = await Problem.findOne({ problemId });
-        if(existingProblem) return res.status(400).send(tagArray);
+        if(existingProblem) return res.status(400).send('Problem already saved');
 
         const problem = new Problem({
             userId: req.user.id,
