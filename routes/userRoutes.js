@@ -20,7 +20,7 @@ userRoutes.post(
         const errors = validationResult(req);
         if(!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
-        const { username, email, password } = req.body;
+        const { username, email, password, firstName, lastName } = req.body;
 
         try {
             // Check if email is already in use
@@ -36,6 +36,8 @@ userRoutes.post(
                 email,
                 password: hashedPassword,
                 username,
+                firstName,
+                lastName,
                 createdAt: new Date()
             });
             await user.save();
@@ -50,7 +52,7 @@ userRoutes.post(
             // Return success resonse
             res.status(201).json({
                 token,
-                user: { id: user._id, username: user.username, email: user.email }
+                user: { id: user._id, username: user.username, email: user.email, firstName: user.firstName, lastName: user.lastName, createdAt: user.createdAt }
             });
         } catch (error) {
             console.log('Registration error', error);
@@ -84,18 +86,16 @@ userRoutes.post(
 
         // Issue 1h JWT
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        res.send({ user: {id: user._id, email: user.email, username: user.username}, token, loggedIn: true})
+        res.send({ user: {id: user._id, email: user.email, username: user.username, firstName: user.firstName, lastName: user.lastName, createdAt: user.createdAt}, token, loggedIn: true})
     }
 );
 
 // GET /api/users/:id
-userRoutes.get('/:username', auth, async(req, res) => {
-    const { username } = req.params;
-
+userRoutes.get('/profile', auth, async(req, res) => {
     try {
-        const user = await User.findOne({username});
+        const user = await User.findOne({_id: req.user.id});
         if(!user) return res.status(400).send('Could not find account');
-        res.status(200).send({user: { id: user._id, email: user.email, username: user.username, createdAt: user.createdAt }});
+        res.status(200).send({user: {id: user._id, email: user.email, username: user.username, firstName: user.firstName, lastName: user.lastName, createdAt: user.createdAt}});
     } catch (error) {
         console.log('Server error', error);
         res.status(500).send(error);
