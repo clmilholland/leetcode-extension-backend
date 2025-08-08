@@ -10,6 +10,7 @@ const problemSchema = new mongoose.Schema({
     pseudocode: {type: String, required: true},
     userId: {type: String, required: true},
     problemId: {type: String, required: true},
+    isFavorited: {type: Boolean, required: false},
     createdAt: {type: Date, default: Date.now}
 });
 

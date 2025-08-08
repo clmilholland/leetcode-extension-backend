@@ -66,6 +66,7 @@ problemRoutes.post('/create', auth, async( req, res ) => {
             pseudocode,
             difficulty,
             tags,
+            isFavorited: false,
             createdAt: new Date()
         })
         await problem.save();
@@ -105,7 +106,7 @@ problemRoutes.get('/:problemId', auth, async( req, res ) => {
 // PUT api/problems/:id
 problemRoutes.put('/:problemId', auth, async( req, res ) => {
     const { problemId } = req.params;
-    const { title, description, code, pseudocode, difficulty } = req.body;
+    const { title, description, code, pseudocode, difficulty, tags, shortDescription, isFavorited } = req.body;
     try {
         
         const problem = await Problem.findOne({problemId, userId: req.user.id});
@@ -116,8 +117,12 @@ problemRoutes.put('/:problemId', auth, async( req, res ) => {
         if(code) problem.code = code;
         if(pseudocode) problem.pseudocode = pseudocode;
         if(difficulty) problem.difficulty = difficulty;
+        if(tags) problem.tags = tags;
+        if(shortDescription) problem.shortDescription = shortDescription;
+        if(isFavorited !== undefined) problem.isFavorited = isFavorited;
 
         await problem.save();
+        console.log(problem.isFavorited)
         res.status(200).json({ message: 'Problem updated successfully', problem });
     } catch (error) {
         console.log('Error updating problem:', error);
